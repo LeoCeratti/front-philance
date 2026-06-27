@@ -1,0 +1,114 @@
+body {
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+nav{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    background-color: rgb(255, 255, 255);
+    border-bottom: 1px solid #41983D; 
+}
+
+.button-login{
+    background-color: #ffffff;
+    border: 1px solid;
+    border-color: #5C8454ff;
+    border-radius: 30px;
+    padding: 10px;
+    width: 100px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.button-cadastro{
+    background-color: #5C8454ff;
+    border: 2px solid;
+    border-color: #5C8454ff;
+    border-radius: 30px;
+    padding: 10px;
+    width: 110px;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.titulo-login{
+    color: #5C8454ff;
+    text-decoration: none;
+
+}
+
+.titulo-cadastro{
+    color:#ffffff;
+    text-decoration: none;
+
+}
+
+ul{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+img{
+    height: 80px; 
+    width: auto;
+}
+
+/* Tela Home da Empresa */
+
+.button-home{
+    background-color: #ffffff;
+    padding: 14px 20px;
+    width: 150px;
+    cursor:pointer;
+    border-style: none;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.button-solicitar-servico{
+    background-color: #ffffff;
+    border-style: none;
+    padding: 14px 20px;
+    width: 250px;
+    cursor:pointer;
+    font-size: 18px;
+}
+.icon-nav{
+    width: 25px;
+    height: 30px;
+}
+.profile-photo {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.profile-photo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(47, 111, 31, 0.3);
+}
+.nav-home-empresa{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    height: 90px;
+    background-color: white;
+    border-bottom: 1px solid #41983D;
+}
+.menu-central{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 100px;
+    margin-right: 40px;
+}
