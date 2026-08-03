@@ -1,39 +1,51 @@
-import { API_URL } from '../../config.js';
 console.log("Arquivo empresaCadastro.js carregado isoladamente de sua pasta!");
 
-// Adicione a palavra 'export' na frente da função
-export function inicializarEventosDoCadastro() {
-    const btnCadastrar = document.getElementById("btnCadastrar");
+document.addEventListener("DOMContentLoaded", () => {
+    inicializarEventosDoCadastro();
+});
+
+function inicializarEventosDoCadastro() {
+    const btnCadastrar = document.getElementById("btnCadastro");
     if (btnCadastrar) {
         btnCadastrar.addEventListener("click", enviarDadosParaOBackend);
         console.log("Botão de cadastro ativado via Módulo!");
     }
 }
 
-let tipoUsuarioAtual = '';
-const botoesSwitch = document.querySelectorAll('.switch-btn');
-const secaoFreelancer = document.getElementById('campos-freelancer');
-const secaoEmpresa = document.getElementById('campos-empresa');
+let tipoUsuarioAtual = 'F';
 
-// 1. Controla a troca visual e atualiza a variável do tipo
-botoesSwitch.forEach(botao => {
-    botao.addEventListener('click', (event) => {
-        botoesSwitch.forEach(b => b.classList.remove('ativo'));
-        event.target.classList.add('ativo');
+// Ouvinte global no documento (Delegação de Eventos)
+document.addEventListener('click', (event) => {
+    const botaoClicado = event.target.closest('.switch-btn');
+    if (!botaoClicado) return;
 
-        const tipoSelecionado = event.currentTarget.dataset.tipo;
-        tipoUsuarioAtual = tipoSelecionado; // Atualiza se é 'F' ou 'E'
+    // Busca os elementos dinamicamente para evitar erro caso não existam no carregamento
+    const secaoFreelancer = document.getElementById('campo-data-freelancer-cadastro');
+    const secaoEmpresa = document.getElementById('campo-data-empresa-cadastro');
+    const secaoFreelancercpf = document.getElementById('campo-cpf-freelancer-cadastro');
+    const secaoEmpresacnpj = document.getElementById('campo-cnpj-empresa-cadastro');
 
-        // Alterna a exibição dos campos na tela
-        if (tipoSelecionado === 'F') {
-            secaoFreelancer.classList.remove('escondido');
-            secaoEmpresa.classList.add('escondido');
-        } else if (tipoSelecionado === 'E') {
-            secaoEmpresa.classList.remove('escondido');
-            secaoFreelancer.classList.add('escondido');
-        }
+    const botoesSwitch = document.querySelectorAll('.switch-btn');
+    botoesSwitch.forEach(b => b.classList.remove('ativo'));
+    
+    botaoClicado.classList.add('ativo');
 
-    });
+    const tipoSelecionado = botaoClicado.dataset.tipo;
+    tipoUsuarioAtual = tipoSelecionado;
+
+    // Alterna a exibição com segurança
+    if (tipoSelecionado === 'F') {
+        secaoFreelancer?.classList.remove('escondido');
+        secaoEmpresa?.classList.add('escondido');
+        secaoFreelancercpf?.classList.remove('escondido');
+        secaoEmpresacnpj?.classList.add('escondido');
+        
+    } else if (tipoSelecionado === 'E') {
+        secaoEmpresa?.classList.remove('escondido');
+        secaoFreelancer?.classList.add('escondido');
+        secaoEmpresacnpj?.classList.remove('escondido');
+        secaoFreelancercpf?.classList.add('escondido');
+    }
 });
 
 async function passwordHash(senha) {
@@ -45,71 +57,137 @@ async function passwordHash(senha) {
 
     const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
 
-    return hashHex
+    return hashHex;
 }
-
 
 async function enviarDadosParaOBackend(event) {
     if (event) event.preventDefault();
 
+    /* Dados pessoais */
     const cpfInput = document.getElementById("cpf");
     const cnpjInput = document.getElementById("cnpj");
     const usernameInput = document.getElementById('username');
     const emailInput = document.getElementById('email');
     const senhaInput = document.getElementById('password');
-    const phoneinput = document.getElementById('phone');
-    const nascimentouInput = document.getElementById('date');
+    const phoneInput = document.getElementById('phone');
+    const nascimentoInput = document.getElementById('date');
 
-    if (!usernameInput || !emailInput || !senhaInput) {
-        console.error("Campos obrigatórios (username, email ou password) não foram encontrados no HTML.");
+    const cepInput = document.getElementById('cep');
+    const ruaInput = document.getElementById('rua');
+    const numeroInput = document.getElementById('numero');
+    const complementoInput = document.getElementById('complemento');
+    const bairroInput = document.getElementById('bairro');
+    const cidadeInput = document.getElementById('cidade');
+    const ufInput = document.getElementById('uf');
+
+    if (!usernameInput?.value || !emailInput?.value || !senhaInput?.value) {
+        alert("Preencha todos os campos obrigatórios (Usuário, E-mail e Senha).");
         return;
     }
 
-    // Leitura segura do documento (CPF ou CNPJ)
-    let documentoValue = "";
-    if (tipoUsuarioAtual === 'F' && cpfInput) {
-        documentoValue = cpfInput.value;
-    } else if (tipoUsuarioAtual === 'E' && cnpjInput) {
-        documentoValue = cnpjInput.value;
-    }
-
-    
-    // Gera o hash da senha de forma assíncrona e segura
+    // Gera o hash da senha de forma assíncrona
     const senhaDigitada = senhaInput.value;
     const passwordHashed = await passwordHash(senhaDigitada);
-    
+
+    // 1. Obtenção segura e sanitização da String
+    let documentoValue = "";
+
+    if (tipoUsuarioAtual === 'F' && cpfInput) {
+        documentoValue = String(cpfInput.value).trim();
+    } else if (tipoUsuarioAtual === 'E' && cnpjInput) {
+        documentoValue = String(cnpjInput.value).trim();
+    }
+
+    // 2. Montagem do objeto JSON que vai para o backend
     const dadosFormulario = {
-        username: usernameInput?.value || "",
-        email: emailInput?.value || "",
-        phone: phoneinput?.value || "",
-        birthday: nascimentouInput?.value || "",
+        username: usernameInput.value.trim(),
+        email: emailInput.value.trim(),
+        phone: phoneInput?.value || "",
+        birthday: nascimentoInput?.value || "",
         type: tipoUsuarioAtual,
         password: passwordHashed,
-        document: documentoValue
+        document: documentoValue  // Enviado como String
     };
 
 
+    try {
+        const resposta = await fetch('https://philance.com.br/api/register-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dadosFormulario)
+        });
 
-    fetch(`${API_URL}/register-user`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dadosFormulario)
-    })
-    .then(resposta => {
+    
+
+        const conteudoResposta = await resposta.json().catch(() => null);
+
         if (resposta.ok) {
-            alert('Sucesso! Salvo no MySQL.');
-            document.getElementById("modal-container").close();
-            alert('Sucesso')
-            console.log(dadosFormulario)
+            const usuarioLogado = conteudoResposta;
 
-            localStorage.setItem("dadosFormulario", JSON.stringify(dadosFormulario));
+            if (usuarioLogado && tipoUsuarioAtual !== usuarioLogado.type) {
+                const perfilCorreto = usuarioLogado.type === 'E' ? 'Empresa' : 'Freelancer';
+                alert(`Atenção: Esta conta está registrada como perfil de ${perfilCorreto}. Selecione o tipo correto na tela.`);
+                return; 
+            }
 
-            window.location.href = "/src/pages/Home/empresa/home.html"; 
+            alert('Cadastro realizado com sucesso!');
+            
+            // Salva os dados no navegador
+            localStorage.setItem("dadosFormulario", JSON.stringify(usuarioLogado));
 
+            // Redirecionamento direto de página
+            if (tipoUsuarioAtual === 'E') {
+                window.location.href = "/src/pages/Home/empresa/home.html"; 
+            } else if (tipoUsuarioAtual === 'F') {
+                window.location.href = "/src/pages/Home/freelancer/homefreelancer.html"; 
+            }
         } else {
-            alert('Erro no servidor.');
-            console.log(dadosFormulario)
+            const mensagemErro = conteudoResposta?.message || 'Falha ao processar a requisição no servidor.';
+            alert(`Erro (${resposta.status}): ${mensagemErro}`);
+            console.error('Detalhes do envio:', dadosFormulario);
         }
-    })
-    .catch(erro => console.error('Erro:', erro));
+    } catch (erro) {
+        alert('Erro de conexão com o servidor. Verifique se o backend está rodando.');
+        console.error('Erro na requisição:', erro);
+    }
+}
+
+const cepInput = document.getElementById('cep');
+
+cepInput.addEventListener('input', async (event) => {
+       
+    const cep = event.target.value.replace(/\D/g, "");
+
+    if (cep.length === 8) {
+        try {
+            const url = "https://viacep.com.br/ws/" + cep + "/json/";
+            const resposta = await fetch(url);
+            const dados = await resposta.json();
+
+            if (dados.erro) {
+                alert("CEP não encontrado!");
+                limparFormulario();
+            } else {
+                preencherFormulario(dados);
+            }
+        } catch (erro) {
+            console.error("Erro ao buscar o CEP:", erro);
+            alert("Erro de conexão ao buscar o CEP.");
+            console.log(cep)
+        }
+    }
+});
+
+function preencherFormulario(dados) {
+    document.getElementById('rua').value = dados.logradouro;
+    document.getElementById('bairro').value = dados.bairro;
+    document.getElementById('cidade').value = dados.localidade;
+    document.getElementById('uf').value = dados.uf;
+}
+
+function limparFormulario() {
+    document.getElementById('rua').value = "";
+    document.getElementById('bairro').value = "";
+    document.getElementById('cidade').value = "";
+    document.getElementById('uf').value = "";
 }

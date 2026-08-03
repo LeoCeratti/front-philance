@@ -27,9 +27,11 @@ if (!dadosSalvosFormulario) {
     }
 }
 
+
+
 async function carregarServicosSolicitados() {
     try {
-        const respostaSolicitados = await fetch("https://philance.com.br/api/assignments");
+        const respostaSolicitados = await fetch("hhttps://philance.com.br/api/assignments");
         
         // Verifica se o servidor respondeu com status de sucesso (200-299)
         if (!respostaSolicitados.ok) {
