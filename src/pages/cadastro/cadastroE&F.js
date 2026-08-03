@@ -191,3 +191,60 @@ function limparFormulario() {
     document.getElementById('cidade').value = "";
     document.getElementById('uf').value = "";
 }
+
+function verificarCPF() {
+    const cpfInput = document.getElementById('cpf');
+    if (!cpfInput) return;
+
+    cpfInput.addEventListener('input', (event) => {
+        let valor = event.target.value.replace(/\D/g, "");
+        if (valor.length <= 11) {
+            cpfInput.maxLength = 14; 
+            valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+            valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+            valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            event.target.value = valor;
+        }
+    const cpf = valor.replace(/\D/g, "");
+
+    if (cpf.length === 11) {
+            if (/^(\d)\1{10}$/.test(cpf)) {
+                marcarCpfInvalido(cpfInput);
+                return;
+            }
+
+            // Cálculo do primeiro dígito verificador
+            let s = 0, r;
+            for (let i = 1; i <= 9; i++) {
+                s += parseInt(cpf[i - 1]) * (11 - i);
+            }
+            r = (s * 10) % 11;
+            if (r === 10 || r === 11) r = 0;
+            if (r !== parseInt(cpf[9])) {
+                marcarCpfInvalido(cpfInput);
+                return;
+            }
+
+            // Cálculo do segundo dígito verificador
+            s = 0;
+            for (let i = 1; i <= 10; i++) {
+                s += parseInt(cpf[i - 1]) * (12 - i);
+            }
+            r = (s * 10) % 11;
+            if (r === 10 || r === 11) r = 0;
+            if (r !== parseInt(cpf[10])) {
+                marcarCpfInvalido(cpfInput);
+                return;
+            }
+
+            // Se passou em todos os cálculos
+            marcarCpfValido(cpfInput);
+        } else {
+            // Resgata o estilo original se o usuário apagar dígitos
+            cpfInput.style.borderColor = "";
+            cpfInput.removeAttribute('data-valido');
+        }
+    });
+}
+
+
