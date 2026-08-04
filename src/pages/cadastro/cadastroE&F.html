@@ -30,6 +30,7 @@
             <input type="hidden" id="letra-cadastro" name="tipo_usuario" value="F">
 
             <!-- Dados Pessoais -->
+
             <div class="inputs">
                 <label for="username">Nome Completo:</label>
                 <input id="username" type="text" placeholder="Digite seu nome completo" required>
@@ -39,20 +40,25 @@
                 <label for="date">Data de Nascimento</label>
                 <input type="date" id="date" required>
             </div>
-             <div id="campo-data-empresa-cadastro" class="secao-cadastro escondido inputs">
+
+            <div id="campo-data-empresa-cadastro" class="secao-cadastro escondido inputs">
                 <label for="date">Data de Criação da Empresa</label>
                 <input type="date" id="date" required>
             </div>
+            
             <div class="inputs">
                 <label for="email">Email:</label>
                 <input id="email" type="email" placeholder="seuemail@exemplo.com" required>
+                <div id="mensagem-email"></div>
             </div>
-
+            
             <div id="campo-cpf-freelancer-cadastro" class="secao-cadastro inputs">
                 <label for="cpf">CPF:</label>
                 <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14">
             </div>
-            
+
+            <div id="mensagem-cpf"></div>
+
             <div id="campo-cnpj-empresa-cadastro" class="secao-cadastro escondido inputs">
                 <label for="cnpj">CNPJ:</label>
                 <input type="text" id="cnpj" placeholder="00.000.000/0001-00" maxlength="18">

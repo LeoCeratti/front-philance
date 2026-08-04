@@ -1,7 +1,15 @@
 console.log("Arquivo empresaCadastro.js carregado isoladamente de sua pasta!");
 
 document.addEventListener("DOMContentLoaded", () => {
+    const emailInput = document.getElementById("email");
+    const cpfInput = document.getElementById("cpf")
     inicializarEventosDoCadastro();
+
+    verificarCPF();
+    
+    if(emailInput){
+        emailInput.addEventListener('blur', verificarEmail);
+    }
 });
 
 function inicializarEventosDoCadastro() {
@@ -213,7 +221,6 @@ function verificarCPF() {
                 return;
             }
 
-            // Cálculo do primeiro dígito verificador
             let s = 0, r;
             for (let i = 1; i <= 9; i++) {
                 s += parseInt(cpf[i - 1]) * (11 - i);
@@ -225,7 +232,6 @@ function verificarCPF() {
                 return;
             }
 
-            // Cálculo do segundo dígito verificador
             s = 0;
             for (let i = 1; i <= 10; i++) {
                 s += parseInt(cpf[i - 1]) * (12 - i);
@@ -237,14 +243,44 @@ function verificarCPF() {
                 return;
             }
 
-            // Se passou em todos os cálculos
             marcarCpfValido(cpfInput);
         } else {
-            // Resgata o estilo original se o usuário apagar dígitos
-            cpfInput.style.borderColor = "";
             cpfInput.removeAttribute('data-valido');
         }
     });
 }
 
+function marcarCpfValido(input) {
+    input.setAttribute("data-valido", "true");
 
+    const mensagem = document.getElementById("mensagem-cpf");
+
+    mensagem.textContent = "CPF Válido.";
+    
+}
+
+function marcarCpfInvalido(input) {
+    input.setAttribute("data-valido", "false");
+
+    const mensagem = document.getElementById("mensagem-cpf");
+    mensagem.textContent = "CPF Inválido.";
+    
+}
+
+function verificarEmail(){
+    const emailInput = document.getElementById('email');
+    const mensagem = document.getElementById("mensagem-email");
+
+    if(!emailInput) return;
+
+    const padrao = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+     if(padrao.test(emailInput.value)) {
+        mensagem.textContent = "Email Válido";
+        return true;
+    } else {
+        
+        mensagem.textContent = "Email Inválido";
+        return false;
+    }
+}
