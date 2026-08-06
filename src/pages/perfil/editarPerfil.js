@@ -36,7 +36,7 @@ async function enviarDadosParaOBackendEditar(event) {
 
 
      try {
-        const respostalogin = await fetch('https://philance.com.br/api/add-address', {
+        const respostalogin = await fetch('http://localhost:8080/add-address', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(dadosFormulario)

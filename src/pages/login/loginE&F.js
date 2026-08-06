@@ -84,7 +84,7 @@ async function pegarDadosParaOBackend(event) {
 
 
     try {
-        const respostalogin = await fetch('https://philance.com.br/api/login-user', {
+        const respostalogin = await fetch('http://localhost:8080/login-user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(dadosFormulario)

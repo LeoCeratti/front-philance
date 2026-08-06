@@ -31,7 +31,7 @@ if (!dadosSalvosFormulario) {
 
 async function carregarServicosSolicitados() {
     try {
-        const respostaSolicitados = await fetch("hhttps://philance.com.br/api/assignments");
+        const respostaSolicitados = await fetch("http://localhost:8080/assignments");
         
         // Verifica se o servidor respondeu com status de sucesso (200-299)
         if (!respostaSolicitados.ok) {
@@ -51,3 +51,27 @@ async function carregarServicosSolicitados() {
 }
 
 carregarServicosSolicitados();
+
+const ctx = document.getElementById('meuGrafico').getContext('2d');
+
+const meuGrafico = new Chart(ctx, {
+    type: 'bar', // Tipo do gráfico: 'bar', 'line', 'pie', etc.
+    data: {
+        labels: ['Seg', 'Ter', 'Quar', 'Quin', 'Sex', 'Sáb', 'Dom'],
+        datasets: [{
+            label: 'Relatório de Serviços',
+            data: [13, 19, 3, 5],
+            backgroundColor: 'rgba(69, 235, 54, 0.5)',
+            borderColor: 'rgb(54, 235, 54)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});

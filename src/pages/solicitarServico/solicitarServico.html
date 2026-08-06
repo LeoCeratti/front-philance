@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Philance | Solicitar Serviço</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -13,111 +14,95 @@
     <link rel="stylesheet" href="/css/solicitarServico.css">
 </head>
 <body>
-    <div id="space-navbar"></div>
-    <div class="background">
-        <div class="container-form">
-            <div class="infos">
-                <!-- Tags -->
-                <section class="area-tags">
-                    <h3 class="title-tags">Área/Tags</h3>
-                    <div class="tags-buttons">
-                        <input type="radio" id="garcom-tags" name="tags-garcom" value="garcom" checked>
-                        <label for="garcom-tags">Garçom</label>
 
-                        <input type="radio" id="dev-tags" name="tags-dev" value="dev">
-                        <label for="dev-tags">Dev</label>
+    <main>
 
-                        <input type="radio" id="entrega-tags" name="tags-entrega" value="entrega">
-                        <label for="entrega-tags">Entrega</label>
-                        
-                        <input type="radio" id="atedimento-tags" name="tags-atedimento" value="atedimento">
-                        <label for="atedimento-tags">Atedimento</label>
+        <div id="space-navbar"></div>
+
+        <div class="solicitar-container">
+            <form id="solicitarForm">
+                <section class="infos">
+                    <!-- Tags -->
+                    <div class="inputs">
+                        <label for="tags">Categoria / Tag do Serviço:</label>
+                        <select id="tags" name="tags" required>
+                            <option value="">Carregando tags...</option>
+                        </select>
                     </div>
-                </section>
-            
-                <!-- Endereço -->
-                <section class="addresses">
-                    <div class="rua-servico">
-                        <h2 class="title-rua" >Endereço do Serviço</h2>
-                        <input type="text" id="rua" class="input-rua">
+                
+                    <div class="inputs">
+                        <label for="rua">Escolha o Endereço:</label>
+                        <select id="rua">
+                            <option value="">Selecione o endereço...</option>
+                        </select>
                     </div>
-                </section>
 
-                <!-- Horário e Idade -->
-                <section class="horario-idade">
-                    <div class="horario-dia">
-                        <div class="horario">
-                            <h2 class="title-horario" >Horário/Dia</h2>
-                            <input type="datetime-local" id="horario" class="input-horario">
+                    <div class="inputs">
+                        <label for="title-horario" >Horário do Início</label>
+                        <input type="datetime-local" id="inicio">
+                    </div>
+
+                    <div class="inputs">
+                        <label for="title-horario" >Horário de Término</label>
+                        <input type="datetime-local" id="termino">
+                    </div>
+
+                    <div class="inputs">
+                        <label for="title-idade" >Idade Mínima</label>
+                        <input type="number" id="min_age" placeholder="Insira idade mínima">
+                    </div>
+
+                    <div class="inputs">
+                        <label for="title-pagamento" >Valor do Pagamento</label>
+                        <input type="number" id="payment">
+                    </div>
+
+                    <!-- Vestimenta -->
+                    <div class="inputs">
+                        <label for="title-vestimenta">Vestimenta Exigida</label>
+                        <div class="vestimenta-buttons">
+                            <!-- Opção 1 (Já inicia marcada por padrão com 'checked') -->
+                            <input type="radio" id="vestimenta-social" name="vestimenta" value="social" checked>
+                            <label for="vestimenta-social">Traje Social Escuro</label>
+
+                            <!-- Opção 2 -->
+                            <input type="radio" id="vestimenta-casual" name="vestimenta" value="casual">
+                            <label for="vestimenta-casual">Casual</label>
                         </div>
                     </div>
 
-                    <div class="idade-minima">
-                        <div class="idade">
-                            <h2 class="title-idade" >Idade Mínima</h2>
-                            <input type="number" id="min_age" class="input-idade" required>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Duração e Pagamento -->
-                <section class="duracao-pagamento">
-                    <div class="duracao-container">
-                        <div class="duracao">
-                            <h2 class="title-duracao" >Duração</h2>
-                            <input type="time" id="horario" class="input-duracao" required>
-                        </div>
+                    <div class="inputs">
+                        <label for="title-descricao">Descrição Serviço</label>
+                        <textarea id="description" placeholder="Descreva os detalhes do trabalho..."></textarea>
                     </div>
 
-                    <div class="pagamento-container">
-                        <div class="pagamento">
-                            <h2 class="title-pagamento" >Valor do Pagamento</h2>
-                            <input type="number" id="payment" class="input-pagamento" required>
-                        </div>
+                    <div class="buttons">
+                        <a href="/src/pages/Home/empresa/home.html">
+                            <button type="button" class="btn btn-light">Voltar</button>
+                        </a>
+                        <button class="btn btn-dark" onclick="enviarDadosParaOBackendSolicitar(event, 'vestimenta')">Publicar Serviço</button>
                     </div>
                 </section>
-
-                <!-- Vestimenta -->
-                <section class="type-vestimenta">
-                    <h3 class="title-vestimenta">Vestimenta Exigida</h3>
-                    <div class="vestimenta-buttons">
-                        <!-- Opção 1 (Já inicia marcada por padrão com 'checked') -->
-                        <input type="radio" id="vestimenta-social" name="vestimenta" value="social" checked>
-                        <label for="vestimenta-social">Traje Social Escuro</label>
-
-                        <!-- Opção 2 -->
-                        <input type="radio" id="vestimenta-casual" name="vestimenta" value="casual">
-                        <label for="vestimenta-casual">Casual</label>
-                    </div>
-                </section>
-
-                <!-- Descrição -->
-                <section class="descricao">
-                    <h3 class="title-descricao">Descrição Serviço</h3>
-                    <textarea class="input-descricao" id="description" placeholder="Descreva os detalhes do trabalho..."></textarea>
-                </section>
-
-                <button class="btn btn-dark" onclick="enviarDadosParaOBackendSolicitar(event, 'vestimenta')">Publicar Serviço</button>
             </div>
         </div>
-    </div>
 
-    </div>
-    <script>
-        document.querySelectorAll('.tags-buttons input[type="radio"]').forEach(radio => {
-            radio.addEventListener('click', function() {
-                if (this.wasChecked) {
-                    this.checked = false;
-                    this.wasChecked = false;
-                } else {
-                    // Remove o estado antigo dos outros do mesmo grupo
-                    document.querySelectorAll(`input[name="${this.name}"]`).forEach(r => r.wasChecked = false);
-                    this.wasChecked = true;
-                }
+        </div>
+        <script src="/src/pages/solicitarServico/solicitarServico.js"></script>
+        <script>
+            document.querySelectorAll('.tags-buttons input[type="radio"]').forEach(radio => {
+                radio.addEventListener('click', function() {
+                    if (this.wasChecked) {
+                        this.checked = false;
+                        this.wasChecked = false;
+                    } else {
+                        // Remove o estado antigo dos outros do mesmo grupo
+                        document.querySelectorAll(`input[name="${this.name}"]`).forEach(r => r.wasChecked = false);
+                        this.wasChecked = true;
+                    }
+                });
             });
-        });
-    </script>
-    <script src="/src/pages/solicitarServico/solicitarServico.js"></script>
+        </script>
+    </main>
 </body>
 <script src="/src/componentes/navbar/navbar.js"></script>
 <script>
