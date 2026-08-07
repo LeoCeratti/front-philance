@@ -35,17 +35,19 @@
                 <div class="inputs">
                     <label for="username">Nome Completo:</label>
                     <input id="username" type="text" placeholder="Digite seu nome completo" required>
+                    <div id="mensagem-nome"></div>
                 </div>
 
                 <div id="campo-data-freelancer-cadastro" class="secao-cadastro inputs">
                     <label for="date">Data de Nascimento</label>
-                    <input type="date" id="date-nascimento" required>
+                    <input type="date" id="date-nascimento" max="" required>
                     <div id="mensagem-birthday"></div>
                 </div>
                 
                 <div id="campo-data-empresa-cadastro" class="secao-cadastro escondido inputs">
                     <label for="date">Data de Criação da Empresa</label>
                     <input type="date" id="date-criacao" required>
+                    <div id="mensagem-criacao"></div>
                 </div>
 
                 <div class="inputs">
@@ -75,12 +77,14 @@
 
                 <div class="inputs">
                     <label for="password">Senha:</label>
-                    <input id="password" type="password" placeholder="••••••••" required>
+                    <input id="password" type="password" placeholder="••••••••" maxlength="255" required>
+                    <div id="mensagem-password"></div>
                 </div>
 
                 <div class="inputs">
                     <label for="confirm-password">Confirmar Senha:</label>
-                    <input id="confirm-password" type="password" placeholder="••••••••" required>
+                    <input id="confirm-password" type="password" placeholder="••••••••" maxlength="255" required>
+                    <div id="mensagem-confirm-password"></div>
                 </div>
 
                 <div class="buttons">
