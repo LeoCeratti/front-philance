@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Philance | Cadastro</title>
-    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/cadastro.css">
+    <!-- Fonte -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="/css/cadastro.css">
+    <!-- Icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 <body>
 
@@ -35,63 +37,79 @@
                 <div class="inputs">
                     <label for="username">Nome Completo:</label>
                     <input id="username" type="text" placeholder="Digite seu nome completo" required>
-                    <div id="mensagem-nome"></div>
+                    <div id="mensagem-nome" class="mensagem-css"></div>
                 </div>
 
                 <div id="campo-data-freelancer-cadastro" class="secao-cadastro inputs">
                     <label for="date">Data de Nascimento</label>
-                    <input type="date" id="date-nascimento" max="" required>
-                    <div id="mensagem-birthday"></div>
+                    <input type="date" id="date-nascimento" required>
+                    <div id="mensagem-birthday" class="mensagem-css"></div>
                 </div>
                 
                 <div id="campo-data-empresa-cadastro" class="secao-cadastro escondido inputs">
                     <label for="date">Data de Criação da Empresa</label>
                     <input type="date" id="date-criacao" required>
-                    <div id="mensagem-criacao"></div>
+                    <div id="mensagem-criacao" class="mensagem-css"></div>
                 </div>
 
                 <div class="inputs">
                     <label for="email">Email:</label>
                     <input id="email" type="email" placeholder="seuemail@exemplo.com" required>
-                    <div id="mensagem-email"></div>
+                    <div id="mensagem-email" class="mensagem-css"></div>
                 </div>
 
                 <div class="inputs">
                     <label for="phone">Telefone:</label>
-                    <input id="phone" type="tel" placeholder="(00) 00000-0000" maxlength="15" required>
-                    <div id="mensagem-phone"></div>
+                    <input id="phone" type="tel" placeholder="(00) 00000-0000" required>
+                    <div id="mensagem-phone" class="mensagem-css"></div>
                 </div>
 
                 <!-- (CPF / CNPJ) -->
                 <div id="campo-cpf-freelancer-cadastro" class="secao-cadastro inputs">
                     <label for="cpf">CPF:</label>
                     <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14">
-                    <div id="mensagem-cpf"></div>
+                    <div id="mensagem-cpf" class="mensagem-css"></div>
                 </div>
             
                 <div id="campo-cnpj-empresa-cadastro" class="secao-cadastro escondido inputs">
                     <label for="cnpj">CNPJ:</label>
                     <input type="text" id="cnpj" placeholder="00.000.000/0001-00" maxlength="18">
-                    <div id="mensagem-cnpj"></div>
+                    <div id="mensagem-cnpj" class="mensagem-css"></div>
                 </div>
 
                 <div class="inputs">
                     <label for="password">Senha:</label>
-                    <input id="password" type="password" placeholder="••••••••" maxlength="255" required>
-                    <div id="mensagem-password"></div>
+                    <input id="password" type="password" placeholder="••••••••" required>
+                    <div id="mensagem-password" class="mensagem-css"></div>
                 </div>
 
                 <div class="inputs">
                     <label for="confirm-password">Confirmar Senha:</label>
-                    <input id="confirm-password" type="password" placeholder="••••••••" maxlength="255" required>
-                    <div id="mensagem-confirm-password"></div>
+                    <input id="confirm-password" type="password" placeholder="••••••••" required>
+                    <div id="mensagem-confirm-password" class="mensagem-css"></div>
+                </div>
+
+                <div id="campo-sobre-freelancer-cadastro" class="secao-cadastro inputs">
+                    <label for="sobre">Sobre Você:</label>
+                    <textarea id="sobre-freelancer" placeholder="Fale sobre você"></textarea>
+                    <div id="mensagem-sobre-freelancer" class="mensagem-css"></div>
+                </div>
+
+                <div id="campo-sobre-empresa-cadastro" class="secao-cadastro escondido inputs">
+                    <label for="sobre">Sobre a Empresa:</label>
+                    <textarea id="sobre-empresa" placeholder="Fale sobre a empresa"></textarea>
+                    <div id="mensagem-sobre-empresa" class="mensagem-css"></div>
                 </div>
 
                 <div class="buttons">
                     <a href="/src/index.html">
-                        <button type="button" class="btn btn-light">Voltar</button>
+                        <button type="button" class="btn btn-light">
+                            <i class="fa-solid fa-arrow-left icon-arrow-L"></i>Voltar
+                        </button>
                     </a>
-                        <button type="button" class="btn btn-dark" onclick="nextStep(2)">Avançar</button>
+                        <button type="button" class="btn btn-dark" onclick="nextStep(2)">
+                            Avançar<i class="fa-solid fa-arrow-right icon-arrowR"></i>
+                        </button>
                 </div>    
             </section>
 
@@ -136,15 +154,14 @@
                     <input id="uf" type="text" placeholder="UF" required>
                 </div>
 
-                <div class="inputs">
-                    <label for="sobre">Sobre mim:</label>
-                    <input type="text">
-                </div>
-
                 <!-- Botões  -->
                 <div class="buttons">
-                    <button type="button" class="btn btn-light" onclick="nextStep(1)">Voltar</button>
-                    <button type="button" class="btn btn-dark" onclick="nextStep(3)">Avançar</button>
+                    <button type="button" class="btn btn-light" onclick="nextStep(1)">
+                        <i class="fa-solid fa-arrow-left icon-arrow-L"></i>Voltar
+                    </button>
+                    <button type="button" class="btn btn-dark" onclick="nextStep(3)">
+                        Avançar<i class="fa-solid fa-arrow-right icon-arrowR"></i>
+                    </button>
                 </div>
             </section>
 
@@ -162,6 +179,64 @@
                     <button class="btn btn-dark" id="btnCadastro" type="submit">Cadastre-se</button>
                 </div>
             </section>  -->
+
+            <!-- Tags -->
+            <section class="step" id="step3">
+                <h3>Tags</h3>
+
+                <div class="inputs">
+                    <div class="tags-buttons">
+                        <input type="radio" id="garcom" name="tags" value="garcom">
+                        <label for="garcom">Garçom</label>
+
+                        <input type="radio" id="atendente" name="tags" value="atendente">
+                        <label for="atendente">Atendente</label>
+                
+                        <input type="radio" id="barista" name="tags" value="barista">
+                        <label for="barista">Barista</label>
+                
+                        <input type="radio" id="seguranca" name="tags" value="seguranca">
+                        <label for="seguranca">Segurança</label>
+                
+                        <input type="radio" id="bombeiroCivil" name="tags" value="bombeiroCivil">
+                        <label for="bombeiroCivil">Bombeiro Civil</label>
+                
+                        <input type="radio" id="cozinheiro" name="tags" value="cozinheiro">
+                        <label for="cozinheiro">Cozinheiro</label>
+
+                        <input type="radio" id="auxiliarDeCozinha" name="tags" value="auxiliarDeCozinha">
+                        <label for="auxiliarDeCozinha">Auxiliar De Cozinha</label>
+
+                        <input type="radio" id="organizadorDeEventos" name="tags" value="organizadorDeEventos">
+                        <label for="organizadorDeEventos">Organizador De Eventos</label>
+                
+                        <input type="radio" id="maridoDeAluguel" name="tags" value="maridoDeAluguel">
+                        <label for="maridoDeAluguel">Marido de Aluguel</label>
+                
+                        <input type="radio" id="ServiçoDeEntregas" name="tags" value="sevicoDeEntregas">
+                        <label for="servicoDeEntregas">Serviço de Entregas</label>
+                
+                        <input type="radio" id="faxineiro" name="tags" value="faxineiro">
+                        <label for="faxineiro">Faxineiro</label>
+                
+                        <input type="radio" id="pedreiro" name="tags" value="pedreiro">
+                        <label for="pedreiro">Pedreiro</label>
+                        
+                        <input type="radio" id="jardineiro" name="tags" value="jardineiro">
+                        <label for="jardineiro">Jardineiro</label>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" class="btn btn-light" onclick="nextStep(2)">
+                        <i class="fa-solid fa-arrow-left icon-arrow-L"></i>Voltar
+                    </button>
+                    <button class="btn btn-dark" id="btnCadastro" type="submit">
+                        Cadastrar<i class="fa-solid fa-arrow-right icon-arrowR"></i>
+                    </button>
+                </div>
+            </section>
+
         </form>
 
         <p class="login-link">

@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const cnpjInput = document.getElementById("cnpj");
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirm-password");
+    const sobreFreelancerInput = document.getElementById("sobre-freelancer");
+    const sobreEmpresaInput = document.getElementById("sobre-empresa");
 
     inicializarEventosDoCadastro();
 
@@ -45,7 +47,14 @@ document.addEventListener("DOMContentLoaded", () => {
         passwordInput.addEventListener("input", verificarPassword);
         confirmPasswordInput.addEventListener("input", verificarPassword);
     }
-    
+    if(sobreFreelancerInput){
+    sobreFreelancerInput.addEventListener("input", verificarSobre);
+    sobreFreelancerInput.addEventListener("blur", verificarSobre);
+    }
+    if(sobreEmpresaInput){
+        sobreEmpresaInput.addEventListener("input", verificarSobre);
+        sobreEmpresaInput.addEventListener("blur", verificarSobre);
+    }
     
 });
 
@@ -70,6 +79,9 @@ document.addEventListener('click', (event) => {
     const secaoFreelancercpf = document.getElementById('campo-cpf-freelancer-cadastro');
     const secaoEmpresacnpj = document.getElementById('campo-cnpj-empresa-cadastro');
 
+    const secaoFreelancerSobre = document.getElementById('campo-sobre-freelancer-cadastro');
+    const secaoEmpresaSobre = document.getElementById('campo-sobre-empresa-cadastro');
+
     const botoesSwitch = document.querySelectorAll('.switch-btn');
     botoesSwitch.forEach(b => b.classList.remove('ativo'));
     
@@ -84,12 +96,16 @@ document.addEventListener('click', (event) => {
         secaoEmpresa?.classList.add('escondido');
         secaoFreelancercpf?.classList.remove('escondido');
         secaoEmpresacnpj?.classList.add('escondido');
+        secaoFreelancerSobre?.classList.remove('escondido');
+        secaoEmpresaSobre?.classList.add('escondido')
         
     } else if (tipoSelecionado === 'E') {
         secaoEmpresa?.classList.remove('escondido');
         secaoFreelancer?.classList.add('escondido');
         secaoEmpresacnpj?.classList.remove('escondido');
         secaoFreelancercpf?.classList.add('escondido');
+        secaoEmpresaSobre?.classList.remove('escondido');
+        secaoFreelancerSobre?.classList.add('escondido')
     }
 });
 
@@ -179,10 +195,10 @@ async function enviarDadosParaOBackend(event) {
     let dateValue = "";
 
     if (tipoUsuarioAtual === 'F' && cpfInput && nascimentoInput) {
-        documentoValue = String(cpfInput.value).trim();
+        documentoValue = String(cpfInput.value).trim().replace(/\D/g,"");
         dateValue = String(nascimentoInput.value).trim();
     } else if (tipoUsuarioAtual === 'E' && cnpjInput && criacaoInput) {
-        documentoValue = String(cnpjInput.value).trim();
+        documentoValue = String(cnpjInput.value).trim().replace(/\D/g,"");
         dateValue = String(criacaoInput.value).trim();
     }
 
@@ -495,10 +511,24 @@ function verificarDataEmpresa(){
 
     criacaoInput.addEventListener("change", () => {
 
-        const dataCriacao = new Date(criacaoInput.value + "T00:00:00");
+        const valor = criacaoInput.value;
+
+        if(!valor){
+            mensagem.textContent = "";
+            criacaoInput.removeAttribute("data-valido");
+            return;
+        }
+
+        const dataCriacao = new Date(valor + "T00:00:00");
         const hoje = new Date();
 
         hoje.setHours(0,0,0,0);
+
+        if(isNaN(dataCriacao.getTime())){
+            mensagem.textContent = "Data inválida.";
+            criacaoInput.setAttribute("data-valido","false");
+            return;
+        }
 
         if(dataCriacao >= hoje){
 
@@ -523,7 +553,7 @@ function verificarEmail(){
 
     if(emailInput.value.trim() === ""){
         emailInput.removeAttribute("data-valido");
-        document.getElementById("mensagem-email").textContent = "";
+        mensagem.textContent = "";
         return;
     }
 
@@ -536,6 +566,7 @@ function verificarEmail(){
     } else {
         
         mensagem.textContent = "Email Inválido";
+        emailInput.setAttribute("data-valido", "false");
         return false;
     }
     
@@ -575,28 +606,25 @@ function verificarPhone(){
     if (phone.length === 0) {
         mensagem.textContent = "";
         phoneInput.value = "";
+        phoneInput.removeAttribute("data-valido");
         return;
     }
     if(phone.length !== 11){
         mensagem.textContent = "Número de celular inválido.";
-        phoneInput.removeAttribute("data-valido");
+        phoneInput.setAttribute("data-valido", "false");
         return false;
     }
 
     if(phone.charAt(2) !== "9"){
         mensagem.textContent = "Número de celular inválido.";
-        phoneInput.removeAttribute("data-valido");
+        phoneInput.setAttribute("data-valido", "false");
         return false;
     }
 
-        mensagem.textContent = "";
-        phoneInput.setAttribute("data-valido", "true");
+    mensagem.textContent = "";
+    phoneInput.setAttribute("data-valido", "true");
 
-        return true;
-    
-    if(phoneInput === 0){
-        mensagem.textContent = "";
-    }
+    return true;
 }
 
 
@@ -617,60 +645,49 @@ function verificarCPF() {
         }
     const cpf = valor.replace(/\D/g, "");
 
-    if (cpf.length === 11) {
-            if (/^(\d)\1{10}$/.test(cpf)) {
-                marcarCpfInvalido(cpfInput);
-                return;
-            }
-
-            let s = 0, r;
-            for (let i = 1; i <= 9; i++) {
-                s += parseInt(cpf[i - 1]) * (11 - i);
-            }
-            r = (s * 10) % 11;
-            if (r === 10 || r === 11) r = 0;
-            if (r !== parseInt(cpf[9])) {
-                marcarCpfInvalido(cpfInput);
-                return;
-            }
-
-            s = 0;
-            for (let i = 1; i <= 10; i++) {
-                s += parseInt(cpf[i - 1]) * (12 - i);
-            }
-            r = (s * 10) % 11;
-            if (r === 10 || r === 11) r = 0;
-            if (r !== parseInt(cpf[10])) {
-                marcarCpfInvalido(cpfInput);
-                return;
-            }
-
-            marcarCpfValido(cpfInput);
-        } else {
-            cpfInput.removeAttribute('data-valido');
-        }
-        if(cpf.length < 0 && cpf.length < 11){
-            
-            cpfInput.setAttribute("data-valido", "false");
-            mensagem.textContent = "CPF incompleto.";
+        if(cpf.length === 0){
+            cpfInput.removeAttribute("data-valido");
+            mensagem.textContent = "";
             return;
         }
 
-        if(cpf.length === 0){
-        cpfInput.removeAttribute("data-valido");
-        document.getElementById("mensagem-cpf").textContent = "";
-        return;
-         }
-
         if(cpf.length !== 11){
-            
             cpfInput.removeAttribute("data-valido");
             mensagem.textContent = "CPF incompleto.";
             return;
-    }
-        
+        }
+
+        if (/^(\d)\1{10}$/.test(cpf)) {
+            marcarCpfInvalido(cpfInput);
+            return;
+        }
+
+        let s = 0, r;
+        for (let i = 1; i <= 9; i++) {
+            s += parseInt(cpf[i - 1]) * (11 - i);
+        }
+        r = (s * 10) % 11;
+        if (r === 10 || r === 11) r = 0;
+        if (r !== parseInt(cpf[9])) {
+            marcarCpfInvalido(cpfInput);
+            return;
+        }
+
+        s = 0;
+        for (let i = 1; i <= 10; i++) {
+            s += parseInt(cpf[i - 1]) * (12 - i);
+        }
+        r = (s * 10) % 11;
+        if (r === 10 || r === 11) r = 0;
+        if (r !== parseInt(cpf[10])) {
+            marcarCpfInvalido(cpfInput);
+            return;
+        }
+
+        marcarCpfValido(cpfInput);
     });
 }
+
 
 function marcarCpfValido(input) {
     input.setAttribute("data-valido", "true");
@@ -718,12 +735,14 @@ function verificarCNPJ(){
 
         if(cnpj.length === 0){
             mensagem.textContent = "";
+            cnpjInput.removeAttribute("data-valido");
             return;
         }
 
 
         if(cnpj.length < 14){
             mensagem.textContent = "CNPJ incompleto.";
+            cnpjInput.removeAttribute("data-valido");
             return;
         }
 
@@ -793,23 +812,66 @@ function verificarPassword() {
     const senha = passwordInput.value;
     const confirmar = confirmPasswordInput.value;
 
-    // Verifica tamanho da senha
-    if (senha.length < 6 && senha.length > 0) {
+    // Verifica se a senha foi preenchida e tamanho mínimo
+    if (senha.length === 0) {
+        mensagemSenha.textContent = "Digite uma senha.";
+        passwordInput.setAttribute("data-valido", "false");
+    } else if (senha.length < 6) {
         mensagemSenha.textContent = "Sua senha deve conter no mínimo 6 dígitos.";
         passwordInput.setAttribute("data-valido", "false");
-        return;
     } else {
         mensagemSenha.textContent = "";
         passwordInput.setAttribute("data-valido", "true");
     }
 
     // Verifica confirmação
-    if (confirmar !== "" && senha !== confirmar) {
+    if (confirmar.length === 0) {
+        mensagemConfirm.textContent = "Confirme sua senha.";
+        confirmPasswordInput.setAttribute("data-valido", "false");
+    } else if (senha !== confirmar) {
         mensagemConfirm.textContent = "A confirmação de senha não confere.";
         confirmPasswordInput.setAttribute("data-valido", "false");
-        return;
     } else {
         mensagemConfirm.textContent = "";
         confirmPasswordInput.setAttribute("data-valido", "true");
+    }
+}
+function verificarSobre(){
+
+    const sobreFreelancerInput = document.getElementById("sobre-freelancer");
+    const sobreEmpresaInput = document.getElementById("sobre-empresa");
+
+    const mensagemSobreFreelancer = document.getElementById("mensagem-sobre-freelancer");
+    const mensagemSobreEmpresa = document.getElementById("mensagem-sobre-empresa");
+
+    if(tipoUsuarioAtual === "F"){
+
+        const sobre = sobreFreelancerInput.value;
+
+        if(sobre.length === 0){
+            mensagemSobreFreelancer.textContent = "Digite uma descrição.";
+            sobreFreelancerInput.setAttribute("data-valido", "false");
+        }else if(sobre.length < 50){
+            mensagemSobreFreelancer.textContent = "Sua descrição deve conter no mínimo 50 caracteres.";
+            sobreFreelancerInput.setAttribute("data-valido", "false");
+        }else{
+            mensagemSobreFreelancer.textContent = "";
+            sobreFreelancerInput.setAttribute("data-valido", "true");
+        }
+
+    }else{
+
+        const sobre = sobreEmpresaInput.value;
+
+        if(sobre.length === 0){
+            mensagemSobreEmpresa.textContent = "Digite uma descrição.";
+            sobreEmpresaInput.setAttribute("data-valido", "false");
+        }else if(sobre.length < 50){
+            mensagemSobreEmpresa.textContent = "Sua descrição deve conter no mínimo 50 caracteres.";
+            sobreEmpresaInput.setAttribute("data-valido", "false");
+        }else{
+            mensagemSobreEmpresa.textContent = "";
+            sobreEmpresaInput.setAttribute("data-valido", "true");
+        }
     }
 }
