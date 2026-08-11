@@ -12,23 +12,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const confirmPasswordInput = document.getElementById("confirm-password");
     const sobreFreelancerInput = document.getElementById("sobre-freelancer");
     const sobreEmpresaInput = document.getElementById("sobre-empresa");
+    const cepInput = document.getElementById("cep");
+    const tagsInputs = document.querySelectorAll('input[name="tags"]');
+    
 
     inicializarEventosDoCadastro();
 
     if(nomeInput){
-    verificarNome();
+        verificarNome();
     }
     if(nascimentoInput){
-    nascimentoInput.max = new Date().toISOString().split("T")[0];
-    verificarIdade();
+        nascimentoInput.max = new Date().toISOString().split("T")[0];
+        verificarIdade();
     }
     if(criacaoInput){
-    criacaoInput.max = new Date().toISOString().split("T")[0];
-    verificarDataEmpresa();
+        criacaoInput.max = new Date().toISOString().split("T")[0];
+        verificarDataEmpresa();
     }
     if(emailInput){
         emailInput.addEventListener('blur', verificarEmail);
-        }
+    }
 
     if(phoneInput){
         phoneInput.addEventListener("input", formatarPhone);
@@ -48,14 +51,20 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmPasswordInput.addEventListener("input", verificarPassword);
     }
     if(sobreFreelancerInput){
-    sobreFreelancerInput.addEventListener("input", verificarSobre);
-    sobreFreelancerInput.addEventListener("blur", verificarSobre);
+        sobreFreelancerInput.addEventListener("input", verificarSobre);
+        sobreFreelancerInput.addEventListener("blur", verificarSobre);
     }
     if(sobreEmpresaInput){
         sobreEmpresaInput.addEventListener("input", verificarSobre);
         sobreEmpresaInput.addEventListener("blur", verificarSobre);
     }
-    
+    if (cepInput) {
+        cepInput.addEventListener("input", verificarCep);
+        cepInput.addEventListener("blur", verificarCep);
+    }
+    if (tagsInputs.length > 0) {
+        verificarTags();
+    }
 });
 
 function inicializarEventosDoCadastro() {
@@ -97,7 +106,7 @@ document.addEventListener('click', (event) => {
         secaoFreelancercpf?.classList.remove('escondido');
         secaoEmpresacnpj?.classList.add('escondido');
         secaoFreelancerSobre?.classList.remove('escondido');
-        secaoEmpresaSobre?.classList.add('escondido')
+        secaoEmpresaSobre?.classList.add('escondido');
         
     } else if (tipoSelecionado === 'E') {
         secaoEmpresa?.classList.remove('escondido');
@@ -105,41 +114,52 @@ document.addEventListener('click', (event) => {
         secaoEmpresacnpj?.classList.remove('escondido');
         secaoFreelancercpf?.classList.add('escondido');
         secaoEmpresaSobre?.classList.remove('escondido');
-        secaoFreelancerSobre?.classList.add('escondido')
+        secaoFreelancerSobre?.classList.add('escondido');
     }
 });
 
-const cepInput = document.getElementById('cep');
+// Evento do CEP para consulta no ViaCEP
+document.addEventListener("DOMContentLoaded", () => {
+    const cepInput = document.getElementById('cep');
 
-cepInput.addEventListener('input', async (event) => {
-       
-    const cep = event.target.value.replace(/\D/g, "");
+    if (cepInput) {
+        cepInput.addEventListener('input', async (event) => {
+            let valor = event.target.value.replace(/\D/g, "");
 
-    if (cep.length === 8) {
-        try {
-            const url = "https://viacep.com.br/ws/" + cep + "/json/";
-            const resposta = await fetch(url);
-            const dados = await resposta.json();
-
-            if (dados.erro) {
-                alert("CEP não encontrado!");
-                limparFormulario();
+            // Aplica mascara visual 00000-000
+            if (valor.length > 5) {
+                event.target.value = valor.replace(/^(\d{5})(\d)/, "$1-$2");
             } else {
-                preencherFormulario(dados);
+                event.target.value = valor;
             }
-        } catch (erro) {
-            console.error("Erro ao buscar o CEP:", erro);
-            alert("Erro de conexão ao buscar o CEP.");
-            console.log(cep)
-        }
+
+            if (valor.length === 8) {
+                try {
+                    const url = "https://viacep.com.br/ws/" + valor + "/json/";
+                    const resposta = await fetch(url);
+                    const dados = await resposta.json();
+
+                    if (dados.erro) {
+                        alert("CEP não encontrado!");
+                        limparFormulario();
+                    } else {
+                        preencherFormulario(dados);
+                        verificarCep();
+                    }
+                } catch (erro) {
+                    console.error("Erro ao buscar o CEP:", erro);
+                    alert("Erro de conexão ao buscar o CEP.");
+                }
+            }
+        });
     }
 });
 
 function preencherFormulario(dados) {
-    document.getElementById('rua').value = dados.logradouro;
-    document.getElementById('bairro').value = dados.bairro;
-    document.getElementById('cidade').value = dados.localidade;
-    document.getElementById('uf').value = dados.uf;
+    document.getElementById('rua').value = dados.logradouro || "";
+    document.getElementById('bairro').value = dados.bairro || "";
+    document.getElementById('cidade').value = dados.localidade || "";
+    document.getElementById('uf').value = dados.uf || "";
 }
 
 function limparFormulario() {
@@ -172,14 +192,20 @@ async function enviarDadosParaOBackend(event) {
     const senhaInput = document.getElementById('password');
     const phoneInput = document.getElementById('phone');
     const nascimentoInput = document.getElementById('date-nascimento');
-    const criacaoInput = document.getElementById('date-criacao')
-
+    const criacaoInput = document.getElementById('date-criacao');
+    const cepInput = document.getElementById('cep');
     const ruaInput = document.getElementById('rua');
     const numeroInput = document.getElementById('numero');
     const complementoInput = document.getElementById('complemento');
     const bairroInput = document.getElementById('bairro');
     const cidadeInput = document.getElementById('cidade');
     const ufInput = document.getElementById('uf');
+
+    const sobreInput = tipoUsuarioAtual === 'F' 
+        ? document.getElementById('sobre-freelancer') 
+        : document.getElementById('sobre-empresa');
+
+    const tagSelecionada = document.querySelector('input[name="tags"]:checked')?.value || "";
 
     if (!usernameInput?.value || !emailInput?.value || !senhaInput?.value) {
         alert("Preencha todos os campos obrigatórios (Usuário, E-mail e Senha).");
@@ -201,6 +227,9 @@ async function enviarDadosParaOBackend(event) {
         documentoValue = String(cnpjInput.value).trim().replace(/\D/g,"");
         dateValue = String(criacaoInput.value).trim();
     }
+    if (!verificarTags()) {
+        return; 
+    }
 
     // 2. Montagem do objeto JSON que vai para o backend
     const dadosFormulario = {
@@ -210,8 +239,10 @@ async function enviarDadosParaOBackend(event) {
         birthday: dateValue,
         type: tipoUsuarioAtual,
         password: passwordHashed,
-        document: documentoValue,  // Enviado como String
-        zip_code: cepInput.value,
+        document: documentoValue, 
+        about: sobreInput?.value || "",
+        tag: tagSelecionada,
+        zip_code: cepInput ? cepInput.value.replace(/\D/g, "") : "",
         street: ruaInput.value,
         number: numeroInput.value,
         complement: complementoInput.value,
@@ -272,7 +303,6 @@ window.nextStep = function(stepNumber) {
         const senha = document.getElementById("password");
         const confirmar = document.getElementById("confirm-password");
 
-
         // Limpa mensagem anterior
         const mensagemAntiga = document.getElementById("mensagem-avancar");
 
@@ -280,166 +310,148 @@ window.nextStep = function(stepNumber) {
             mensagemAntiga.remove();
         }
 
-
         // Nome
         if(nome.value.trim() === ""){
-
-            document.getElementById("mensagem-nome").textContent =
-            "Digite seu nome completo.";
-
+            document.getElementById("mensagem-nome").textContent = "Digite seu nome completo.";
             nome.setAttribute("data-valido","false");
             valido = false;
-
         }else{
-
             document.getElementById("mensagem-nome").textContent = "";
             nome.setAttribute("data-valido","true");
-
         }
-
 
         // Data freelancer / empresa
         if(tipoUsuarioAtual === "F"){
-
             const nascimento = document.getElementById("date-nascimento");
-
             if(nascimento.getAttribute("data-valido") !== "true"){
                 valido = false;
             }
-
         }else{
-
             const criacao = document.getElementById("date-criacao");
-
             if(criacao.getAttribute("data-valido") !== "true"){
                 valido = false;
             }
-
         }
-
 
         // Email
         verificarEmail();
-
         if(email.getAttribute("data-valido") !== "true"){
             valido = false;
         }
 
-
         // Telefone
         verificarPhone();
-
         if(phone.getAttribute("data-valido") !== "true"){
             valido = false;
         }
 
-
         // CPF
         if(tipoUsuarioAtual === "F"){
-
             const cpf = document.getElementById("cpf");
-
             if(cpf.getAttribute("data-valido") !== "true"){
                 valido = false;
             }
-
         }
-
 
         // CNPJ
         if(tipoUsuarioAtual === "E"){
-
             const cnpj = document.getElementById("cnpj");
-
             if(cnpj.getAttribute("data-valido") !== "true"){
                 valido = false;
             }
-
         }
-
 
         // Senha
         verificarPassword();
-
         if(
             senha.getAttribute("data-valido") !== "true" ||
             confirmar.getAttribute("data-valido") !== "true"
         ){
-
             valido = false;
-
         }
 
-
-        // Mensagem acima do botão
+        // Mensagem Caso algo esteja Errado
         if(!valido){
-
-            const mensagem = document.createElement("div");
-
-            mensagem.id = "mensagem-avancar";
-            mensagem.textContent =
-            "Preencha todos os campos corretamente antes de avançar.";
-
-
-            const botoes = document.querySelector("#step1 .buttons");
-
-            botoes.parentNode.insertBefore(
-                mensagem,
-                botoes
-            );
-
-
+            const mensagemGeral = document.getElementById("mensagem-geral");
+            if(mensagemGeral){
+                mensagemGeral.textContent = "Preencha todos os campos corretamente antes de avançar.";
+            }
             return;
+        }
+    }
 
+    else if(stepNumber === 3){
+
+        let valido = true;
+
+        const cep = document.getElementById("cep");
+        const rua = document.getElementById("rua");
+        const numero = document.getElementById("numero");
+        const bairro = document.getElementById("bairro");
+        const cidade = document.getElementById("cidade");
+        const uf = document.getElementById("uf");
+        const mensagemCep = document.getElementById("mensagem-cep");
+
+        if(mensagemCep) mensagemCep.textContent = "";
+
+        //Valida o CEP
+        verificarCep();
+        if(cep.getAttribute("data-valido") !== "true"){
+            valido = false;
         }
 
+        // Valida campos básicos de texto obrigatórios no HTML
+        if(
+            rua.value.trim() === "" ||
+            numero.value.trim() === "" ||
+            bairro.value.trim() === "" ||
+            cidade.value.trim() === "" ||
+            uf.value.trim() === ""
+        ){
+            valido = false;
+        }
+
+        // Caso falhe exibe o aviso
+        if(!valido){
+            if(mensagemCep){
+                mensagemCep.textContent = "Preencha todos os campos de avançar.";
+            }
+            return;
+        }
     }
 
 
-    // Continua para próxima etapa
+    // Continua para a próxima etapa
     document.querySelectorAll('.step').forEach(step => {
-
         step.classList.remove('active');
-
     });
-
 
     const targetStep = document.getElementById("step" + stepNumber);
 
-
     if(targetStep){
-
         targetStep.classList.add("active");
-
     }
-
 };
 
 function verificarNome(){
-
     const nomeInput = document.getElementById("username");
     const mensagem = document.getElementById("mensagem-nome");
 
     if(!nomeInput || !mensagem) return;
 
     nomeInput.addEventListener("blur", () => {
-
         const nome = nomeInput.value.trim();
 
         if(nome === ""){
-
             mensagem.textContent = "Digite seu nome completo.";
             nomeInput.setAttribute("data-valido","false");
-
         }else{
-
             mensagem.textContent = "";
             nomeInput.setAttribute("data-valido","true");
-
         }
-
     });
 }
+
 function verificarIdade(){
     const nascimentoInput = document.getElementById("date-nascimento");
     const mensagem = document.getElementById("mensagem-birthday");
@@ -447,7 +459,6 @@ function verificarIdade(){
     if(!nascimentoInput || !mensagem) return;
 
     nascimentoInput.addEventListener("change", () => {
-
         const valor = nascimentoInput.value;
 
         if(!valor){
@@ -456,61 +467,47 @@ function verificarIdade(){
             return;
         }
 
-        const dataNascimento = new Date(valor);
+        const dataNascimento = new Date(valor + "T00:00:00");
         const hoje = new Date();
 
-        // Impede datas inválidas
         if(isNaN(dataNascimento.getTime())){
             mensagem.textContent = "Data inválida.";
             nascimentoInput.setAttribute("data-valido","false");
             return;
         }
 
-        // Remove horas para comparar somente datas
-        dataNascimento.setHours(0,0,0,0);
         hoje.setHours(0,0,0,0);
 
-        // Não permite hoje nem datas futuras
         if(dataNascimento >= hoje){
-
             mensagem.textContent = "Insira uma data válida.";
             nascimentoInput.setAttribute("data-valido","false");
             return;
         }
 
-
         let idade = hoje.getFullYear() - dataNascimento.getFullYear();
-
         const mes = hoje.getMonth() - dataNascimento.getMonth();
 
         if(mes < 0 || (mes === 0 && hoje.getDate() < dataNascimento.getDate())){
             idade--;
         }
 
-
         if(idade < 16){
-
             mensagem.textContent = "Você precisa ter no mínimo 16 anos.";
             nascimentoInput.setAttribute("data-valido","false");
-
         }else{
-
             mensagem.textContent = "";
             nascimentoInput.setAttribute("data-valido","true");
-
         }
-
     });
 }
-function verificarDataEmpresa(){
 
+function verificarDataEmpresa(){
     const criacaoInput = document.getElementById("date-criacao");
     const mensagem = document.getElementById("mensagem-criacao");
 
     if(!criacaoInput || !mensagem) return;
 
     criacaoInput.addEventListener("change", () => {
-
         const valor = criacaoInput.value;
 
         if(!valor){
@@ -531,20 +528,16 @@ function verificarDataEmpresa(){
         }
 
         if(dataCriacao >= hoje){
-
             mensagem.textContent = "Insira uma data válida.";
             criacaoInput.setAttribute("data-valido","false");
             return;
-
         } else {
-
             mensagem.textContent = "";
             criacaoInput.setAttribute("data-valido","true");
-
         }
-
     });
 }
+
 function verificarEmail(){
     const emailInput = document.getElementById("email");
     const mensagem = document.getElementById("mensagem-email");
@@ -559,18 +552,17 @@ function verificarEmail(){
 
     const padrao = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-     if (padrao.test(emailInput.value)) {
+    if (padrao.test(emailInput.value)) {
         mensagem.textContent = "";
         emailInput.setAttribute("data-valido", "true");
         return true;
     } else {
-        
         mensagem.textContent = "Email Inválido";
         emailInput.setAttribute("data-valido", "false");
         return false;
     }
-    
 }
+
 function formatarPhone() {
     const phoneInput = document.getElementById("phone");
     const mensagem = document.getElementById("mensagem-phone");
@@ -601,7 +593,6 @@ function verificarPhone(){
     const phoneInput = document.getElementById("phone");
     const mensagem = document.getElementById("mensagem-phone");
 
-
     const phone = phoneInput.value.replace(/\D/g, "");
     if (phone.length === 0) {
         mensagem.textContent = "";
@@ -627,13 +618,11 @@ function verificarPhone(){
     return true;
 }
 
-
 function verificarCPF() {
     const mensagem = document.getElementById("mensagem-cpf");
     const cpfInput = document.getElementById('cpf');
     if (!cpfInput) return;
 
-    
     cpfInput.addEventListener('input', (event) => {
         let valor = event.target.value.replace(/\D/g, "");
         if (valor.length <= 11) {
@@ -643,7 +632,7 @@ function verificarCPF() {
             valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
             event.target.value = valor;
         }
-    const cpf = valor.replace(/\D/g, "");
+        const cpf = valor.replace(/\D/g, "");
 
         if(cpf.length === 0){
             cpfInput.removeAttribute("data-valido");
@@ -688,43 +677,32 @@ function verificarCPF() {
     });
 }
 
-
 function marcarCpfValido(input) {
     input.setAttribute("data-valido", "true");
-
     const mensagem = document.getElementById("mensagem-cpf");
-
     mensagem.textContent = "";
-    
 }
 
 function marcarCpfInvalido(input) {
     input.setAttribute("data-valido", "false");
-
     const mensagem = document.getElementById("mensagem-cpf");
     mensagem.textContent = "CPF Inválido.";
 }
 
 function verificarCNPJ(){
-
     const cnpjInput = document.getElementById("cnpj");
     const mensagem = document.getElementById("mensagem-cnpj");
 
     if(!cnpjInput || !mensagem) return;
 
-
     cnpjInput.addEventListener("input", (event)=>{
-
         let cnpj = event.target.value.replace(/\D/g,"");
-
 
         if(cnpj.length > 14){
             cnpj = cnpj.substring(0,14);
         }
 
-
         let valor = cnpj;
-
         valor = valor.replace(/^(\d{2})(\d)/,"$1.$2");
         valor = valor.replace(/^(\d{2})\.(\d{3})(\d)/,"$1.$2.$3");
         valor = valor.replace(/\.(\d{3})(\d)/,".$1/$2");
@@ -732,13 +710,11 @@ function verificarCNPJ(){
 
         event.target.value = valor;
 
-
         if(cnpj.length === 0){
             mensagem.textContent = "";
             cnpjInput.removeAttribute("data-valido");
             return;
         }
-
 
         if(cnpj.length < 14){
             mensagem.textContent = "CNPJ incompleto.";
@@ -746,30 +722,23 @@ function verificarCNPJ(){
             return;
         }
 
-
         if(validarCNPJ(cnpj)){
             mensagem.textContent = "";
             cnpjInput.setAttribute("data-valido","true");
-
         }else{
             mensagem.textContent = "CNPJ Inválido.";
             cnpjInput.setAttribute("data-valido","false");
         }
-
     });
-
 }
+
 function validarCNPJ(cnpj){
-
     if(cnpj.length !== 14) return false;
-
     if(/^(\d)\1+$/.test(cnpj)) return false;
-
 
     let tamanho = 12;
     let numeros = cnpj.substring(0,tamanho);
     let digitos = cnpj.substring(tamanho);
-
 
     let soma = 0;
     let pos = tamanho - 7;
@@ -785,7 +754,6 @@ function validarCNPJ(cnpj){
         return false;
     }
 
-
     tamanho = tamanho + 1;
     numeros = cnpj.substring(0,tamanho);
 
@@ -799,9 +767,9 @@ function validarCNPJ(cnpj){
 
     resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
 
-
     return resultado == digitos.charAt(1);
 }
+
 function verificarPassword() {
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirm-password");
@@ -812,7 +780,6 @@ function verificarPassword() {
     const senha = passwordInput.value;
     const confirmar = confirmPasswordInput.value;
 
-    // Verifica se a senha foi preenchida e tamanho mínimo
     if (senha.length === 0) {
         mensagemSenha.textContent = "Digite uma senha.";
         passwordInput.setAttribute("data-valido", "false");
@@ -824,7 +791,6 @@ function verificarPassword() {
         passwordInput.setAttribute("data-valido", "true");
     }
 
-    // Verifica confirmação
     if (confirmar.length === 0) {
         mensagemConfirm.textContent = "Confirme sua senha.";
         confirmPasswordInput.setAttribute("data-valido", "false");
@@ -836,8 +802,8 @@ function verificarPassword() {
         confirmPasswordInput.setAttribute("data-valido", "true");
     }
 }
-function verificarSobre(){
 
+function verificarSobre(){
     const sobreFreelancerInput = document.getElementById("sobre-freelancer");
     const sobreEmpresaInput = document.getElementById("sobre-empresa");
 
@@ -845,7 +811,6 @@ function verificarSobre(){
     const mensagemSobreEmpresa = document.getElementById("mensagem-sobre-empresa");
 
     if(tipoUsuarioAtual === "F"){
-
         const sobre = sobreFreelancerInput.value;
 
         if(sobre.length === 0){
@@ -858,9 +823,7 @@ function verificarSobre(){
             mensagemSobreFreelancer.textContent = "";
             sobreFreelancerInput.setAttribute("data-valido", "true");
         }
-
     }else{
-
         const sobre = sobreEmpresaInput.value;
 
         if(sobre.length === 0){
@@ -873,5 +836,61 @@ function verificarSobre(){
             mensagemSobreEmpresa.textContent = "";
             sobreEmpresaInput.setAttribute("data-valido", "true");
         }
+    }
+}
+
+function verificarCep() {
+    const cepInput = document.getElementById("cep");
+    const mensagem = document.getElementById("mensagem-cep");
+    
+
+    if (!cepInput) return;
+
+    const cep = cepInput.value.replace(/\D/g, "");
+
+    if (cep.length === 0) {
+        mensagem.textContent = "";
+        cepInput.removeAttribute("data-valido");
+        return;
+    }
+
+    mensagem.textContent = "";
+    cepInput.setAttribute("data-valido", "true");
+}
+
+function verificarTags() {
+    const tagsInputs = document.querySelectorAll('input[name="tags"]');
+    const mensagem = document.getElementById("mensagem-tag");
+
+    if (!tagsInputs.length) return false;
+
+    // Procura se tem algum radio marcado
+    const tagSelecionada = document.querySelector('input[name="tags"]:checked');
+
+    // Escuta a troca em cada radio button
+    tagsInputs.forEach(tag => {
+        tag.addEventListener("change", () => {
+            if (mensagem) mensagem.textContent = "";
+            
+            // Marca no container das tags que a seleção é válida
+            const containerTags = document.querySelector('.tags-buttons');
+            if (containerTags) containerTags.setAttribute("data-valido", "true");
+        });
+    });
+
+    if (!tagSelecionada) {
+        if (mensagem) mensagem.textContent = "Selecione ao menos uma tag para continuar.";
+        
+        const containerTags = document.querySelector('.tags-buttons');
+        if (containerTags) containerTags.setAttribute("data-valido", "false");
+        
+        return false;
+    } else {
+        if (mensagem) mensagem.textContent = "";
+        
+        const containerTags = document.querySelector('.tags-buttons');
+        if (containerTags) containerTags.setAttribute("data-valido", "true");
+        
+        return true;
     }
 }
