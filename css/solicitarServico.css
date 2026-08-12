@@ -210,3 +210,10 @@ body {
 .btn-light:hover { 
   opacity: .9; 
 }
+
+/* Mensagem */
+
+.mensagem-css{
+    font-size: 13.5px;
+    color: red;
+}
