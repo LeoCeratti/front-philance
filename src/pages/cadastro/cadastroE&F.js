@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
         cepInput.addEventListener("blur", verificarCep);
     }
     if (tagsInputs.length > 0) {
-        verificarTags();
+        tagsInputs.forEach(tag => tag.addEventListener("change", verificarTags));
     }
 });
 
@@ -240,9 +240,8 @@ async function enviarDadosParaOBackend(event) {
         type: tipoUsuarioAtual,
         password: passwordHashed,
         document: documentoValue, 
-        about: sobreInput?.value || "",
         tag: tagSelecionada,
-        zip_code: cepInput ? cepInput.value.replace(/\D/g, "") : "",
+        zip_code:  cepInput.value.replace(/\D/g, ""),
         street: ruaInput.value,
         number: numeroInput.value,
         complement: complementoInput.value,
@@ -861,36 +860,19 @@ function verificarCep() {
 function verificarTags() {
     const tagsInputs = document.querySelectorAll('input[name="tags"]');
     const mensagem = document.getElementById("mensagem-tag");
+    const containerTags = document.querySelector('.tags-buttons');
 
     if (!tagsInputs.length) return false;
 
-    // Procura se tem algum radio marcado
     const tagSelecionada = document.querySelector('input[name="tags"]:checked');
 
-    // Escuta a troca em cada radio button
-    tagsInputs.forEach(tag => {
-        tag.addEventListener("change", () => {
-            if (mensagem) mensagem.textContent = "";
-            
-            // Marca no container das tags que a seleção é válida
-            const containerTags = document.querySelector('.tags-buttons');
-            if (containerTags) containerTags.setAttribute("data-valido", "true");
-        });
-    });
-
     if (!tagSelecionada) {
-        if (mensagem) mensagem.textContent = "Selecione ao menos uma tag para continuar.";
-        
-        const containerTags = document.querySelector('.tags-buttons');
-        if (containerTags) containerTags.setAttribute("data-valido", "false");
-        
+        mensagem.textContent = "Selecione ao menos uma tag para continuar.";
+        containerTags.setAttribute("data-valido", "false");
         return false;
-    } else {
-        if (mensagem) mensagem.textContent = "";
-        
-        const containerTags = document.querySelector('.tags-buttons');
-        if (containerTags) containerTags.setAttribute("data-valido", "true");
-        
-        return true;
     }
+
+    mensagem.textContent = "";
+    containerTags.setAttribute("data-valido", "true");
+    return true;
 }
